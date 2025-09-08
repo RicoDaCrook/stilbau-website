@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, Menu, X, Phone, Mail, MapPin, Check, Star, Shield, Clock, Zap, Eye, Cpu, CreditCard, Home, Settings, Users, ArrowRight, Award, TrendingUp, Layers, Box } from 'lucide-react';
 
@@ -795,5 +796,6 @@ const StilbauWebsite = () => {
     </div>
   );
 };
+
 
 export default StilbauWebsite;
