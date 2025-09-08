@@ -1,309 +1,194 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronRight, Menu, X, Phone, Mail, MapPin, Check, Star, Shield, Clock, Zap, Eye, Cpu, CreditCard, Home, Settings, Users, ArrowRight, Award, TrendingUp, Layers, Box } from 'lucide-react';
+import { useState, useEffect } from 'react'
 
-const StilbauWebsite = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeProduct, setActiveProduct] = useState('fenster');
-  const [konfiguratorPrice, setKonfiguratorPrice] = useState(489);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [scrollY, setScrollY] = useState(0);
+export default function HomePage() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+  const [konfiguratorPrice, setKonfiguratorPrice] = useState(489)
+  const [selectedMaterial, setSelectedMaterial] = useState('pvc')
+  const [windowWidth, setWindowWidth] = useState(1200)
+  const [windowHeight, setWindowHeight] = useState(1400)
+  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 })
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
+    const handleScroll = () => setScrollY(window.scrollY)
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100
+      })
+    }
 
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('mousemove', handleMouseMove)
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
 
-  const products = {
-    fenster: { name: 'Fenster', icon: '🪟', price: 'Ab 89€' },
-    tueren: { name: 'Haustüren', icon: '🚪', price: 'Ab 1.299€' },
-    rolladen: { name: 'Rollläden', icon: '🔒', price: 'Ab 199€' },
-    insekt: { name: 'Insektenschutz', icon: '🦟', price: 'Ab 49€' }
-  };
+  useEffect(() => {
+    const basePrice = 300
+    const materialPrice = selectedMaterial === 'pvc' ? 0 : selectedMaterial === 'holz' ? 200 : 400
+    const sizePrice = ((windowWidth * windowHeight) / 1000000) * 150
+    setKonfiguratorPrice(Math.round(basePrice + materialPrice + sizePrice))
+  }, [selectedMaterial, windowWidth, windowHeight])
+
+  const products = [
+    { id: 'fenster', name: 'Fenster', icon: '🪟', price: 'Ab 89€', desc: 'Kunststoff, Holz & Aluminium' },
+    { id: 'tueren', name: 'Haustüren', icon: '🚪', price: 'Ab 1.299€', desc: 'Sicherheit trifft Design' },
+    { id: 'rolladen', name: 'Rollläden', icon: '🔒', price: 'Ab 199€', desc: 'Schutz & Komfort' },
+    { id: 'insekt', name: 'Insektenschutz', icon: '🦟', price: 'Ab 49€', desc: 'Frische Luft ohne Insekten' }
+  ]
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1f2e 25%, #2c4059 50%, #1a1f2e 75%, #0a0a0a 100%)',
-      color: '#ffffff',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      
-      {/* Animated Background Overlay */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(44, 64, 89, 0.3) 0%, transparent 50%)`,
-        pointerEvents: 'none',
-        zIndex: 1
-      }} />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-gray-900 text-white overflow-x-hidden">
+      {/* Animated Background */}
+      <div 
+        className="fixed inset-0 opacity-30 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(44, 64, 89, 0.3), transparent 50%)`
+        }}
+      />
 
       {/* Navigation */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        background: 'rgba(10, 10, 10, 0.8)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        zIndex: 50,
-        padding: '1rem 2rem'
-      }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ fontSize: '1.8rem', fontWeight: 'bold', letterSpacing: '2px' }}>
-              STILBAU
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-b border-white/10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div className="text-2xl font-bold tracking-wider">STILBAU</div>
+              <div className="hidden sm:block text-xs text-gray-400 border-l border-gray-600 pl-3">
+                SAUBER • FAIR • ZUVERLÄSSIG
+              </div>
             </div>
-            <div style={{ 
-              fontSize: '0.7rem', 
-              color: '#999',
-              borderLeft: '2px solid #333',
-              paddingLeft: '0.5rem',
-              marginLeft: '0.5rem'
-            }}>
-              SAUBER • FAIR • ZUVERLÄSSIG
-            </div>
-          </div>
 
-          {/* Desktop Menu */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            <div style={{ display: window.innerWidth > 768 ? 'flex' : 'none', gap: '2rem', alignItems: 'center' }}>
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-8">
               {['Produkte', '3D Konfigurator', 'Referenzen', 'Service', 'Über uns'].map((item) => (
-                <a 
+                <a
                   key={item}
                   href={`#${item.toLowerCase().replace(' ', '-')}`}
-                  style={{ 
-                    color: '#fff', 
-                    textDecoration: 'none',
-                    fontSize: '0.95rem',
-                    transition: 'color 0.3s',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => e.target.style.color = '#4a6fa5'}
-                  onMouseLeave={(e) => e.target.style.color = '#fff'}
+                  className="hover:text-blue-400 transition-colors duration-300"
                 >
                   {item}
                 </a>
               ))}
+              <button className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                Kostenlose Beratung
+              </button>
             </div>
-            
-            <button style={{
-              background: 'linear-gradient(135deg, #2c4059, #3a5073)',
-              color: 'white',
-              border: 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '50px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'transform 0.3s, box-shadow 0.3s',
-              fontSize: '0.9rem'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 10px 30px rgba(44, 64, 89, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}>
-              Kostenlose Beratung
-            </button>
 
             {/* Mobile Menu Toggle */}
-            <button 
+            <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              style={{ display: window.innerWidth <= 768 ? 'block' : 'none', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
+              className="lg:hidden text-white"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="lg:hidden bg-black/90 backdrop-blur-xl border-t border-white/10">
+            <div className="container mx-auto px-6 py-4">
+              {['Produkte', '3D Konfigurator', 'Referenzen', 'Service', 'Über uns'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(' ', '-')}`}
+                  className="block py-2 hover:text-blue-400 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item}
+                </a>
+              ))}
+              <button className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 rounded-full font-semibold">
+                Kostenlose Beratung
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
-      <section style={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center',
-        paddingTop: '80px',
-        position: 'relative',
-        zIndex: 2
-      }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem', width: '100%' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth > 968 ? '1fr 1fr' : '1fr', gap: '4rem', alignItems: 'center' }}>
-            
+      <section className="min-h-screen flex items-center pt-20 px-6 relative">
+        <div className="container mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div style={{ transform: `translateY(${scrollY * 0.1}px)` }}>
+            <div className="animate-fadeIn">
               {/* Trust Badges */}
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-                <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 1rem',
-                  background: 'rgba(44, 64, 89, 0.2)',
-                  border: '1px solid rgba(44, 64, 89, 0.3)',
-                  borderRadius: '30px',
-                  fontSize: '0.85rem'
-                }}>
-                  <Check size={16} /> Offizieller Drutex Partner
+              <div className="flex flex-wrap gap-3 mb-6">
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900/30 border border-blue-700/50 rounded-full text-sm">
+                  ✓ Offizieller Drutex Partner
                 </span>
-                <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 1rem',
-                  background: 'rgba(44, 64, 89, 0.2)',
-                  border: '1px solid rgba(44, 64, 89, 0.3)',
-                  borderRadius: '30px',
-                  fontSize: '0.85rem'
-                }}>
-                  <Star size={16} /> 4.9/5 Bewertung
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900/30 border border-blue-700/50 rounded-full text-sm">
+                  ⭐ 4.9/5 Bewertung
                 </span>
               </div>
 
-              <h1 style={{ 
-                fontSize: window.innerWidth > 768 ? '4rem' : '2.5rem', 
-                fontWeight: '800',
-                lineHeight: '1.1',
-                marginBottom: '1.5rem'
-              }}>
-                Premium <span style={{
-                  background: 'linear-gradient(135deg, #ffffff, #4a6fa5)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }}>Fenster</span><br />
-                nach Maß
+              <h1 className="text-5xl lg:text-7xl font-bold mb-6">
+                Premium{' '}
+                <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                  Fenster
+                </span>
+                <br />nach Maß
               </h1>
 
-              <p style={{ 
-                fontSize: '1.25rem', 
-                color: '#b0b0b0',
-                marginBottom: '2rem',
-                lineHeight: '1.6'
-              }}>
-                Konfigurieren Sie Ihre Traumfenster in <span style={{ color: '#fff', fontWeight: '600' }}>3D</span>, 
-                erhalten Sie <span style={{ color: '#fff', fontWeight: '600' }}>Live-Preise</span> und 
-                profitieren Sie von unserer <span style={{ color: '#fff', fontWeight: '600' }}>40-jährigen Expertise</span>.
+              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                Konfigurieren Sie Ihre Traumfenster in <span className="text-white font-semibold">3D</span>,
+                erhalten Sie <span className="text-white font-semibold">Live-Preise</span> und
+                profitieren Sie von unserer <span className="text-white font-semibold">40-jährigen Expertise</span>.
               </p>
 
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem', flexWrap: 'wrap' }}>
-                <button style={{
-                  background: 'linear-gradient(135deg, #2c4059, #3a5073)',
-                  color: 'white',
-                  border: 'none',
-                  padding: '1rem 2rem',
-                  borderRadius: '50px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'transform 0.3s'
-                }}
-                onMouseEnter={(e) => e.target.style.transform = 'translateX(5px)'}
-                onMouseLeave={(e) => e.target.style.transform = 'translateX(0)'}>
-                  3D Konfigurator starten <ArrowRight size={20} />
+              <div className="flex flex-wrap gap-4 mb-12">
+                <button className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 rounded-full font-semibold flex items-center gap-2 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5">
+                  3D Konfigurator starten →
                 </button>
-                <button style={{
-                  background: 'transparent',
-                  color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  padding: '1rem 2rem',
-                  borderRadius: '50px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  transition: 'background 0.3s'
-                }}
-                onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                onMouseLeave={(e) => e.target.style.background = 'transparent'}>
+                <button className="border border-white/30 px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-all duration-300">
                   Katalog ansehen
                 </button>
               </div>
 
               {/* Stats */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(3, 1fr)', 
-                gap: '2rem',
-                paddingTop: '2rem',
-                borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-              }}>
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
                 <div>
-                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#4a6fa5' }}>7.000+</div>
-                  <div style={{ fontSize: '0.85rem', color: '#999' }}>Zufriedene Kunden</div>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    7.000+
+                  </div>
+                  <div className="text-sm text-gray-400">Zufriedene Kunden</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#4a6fa5' }}>3-4</div>
-                  <div style={{ fontSize: '0.85rem', color: '#999' }}>Wochen Lieferzeit</div>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    3-4
+                  </div>
+                  <div className="text-sm text-gray-400">Wochen Lieferzeit</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#4a6fa5' }}>10</div>
-                  <div style={{ fontSize: '0.85rem', color: '#999' }}>Jahre Garantie</div>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    10
+                  </div>
+                  <div className="text-sm text-gray-400">Jahre Garantie</div>
                 </div>
               </div>
             </div>
 
             {/* Right: 3D Preview */}
-            <div style={{ 
-              position: 'relative',
-              transform: `translateY(${Math.sin(Date.now() / 1000) * 10}px)`
-            }}>
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(44, 64, 89, 0.1), rgba(255, 255, 255, 0.05))',
-                borderRadius: '20px',
-                padding: '3rem',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-              }}>
-                <div style={{
-                  aspectRatio: '1',
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent)',
-                  borderRadius: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '8rem',
-                  position: 'relative'
-                }}>
+            <div className="relative animate-float">
+              <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
+                <div className="aspect-square bg-gradient-to-br from-white/5 to-transparent rounded-2xl flex items-center justify-center text-8xl">
                   🪟
-                  <div style={{
-                    position: 'absolute',
-                    top: '-10px',
-                    right: '-10px',
-                    background: '#00ff00',
-                    color: '#000',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '20px',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold'
-                  }}>
-                    NEU: AR-Ansicht
-                  </div>
+                </div>
+                <div className="absolute -top-4 -right-4 bg-green-500 text-black px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+                  NEU: AR-Ansicht
                 </div>
               </div>
             </div>
@@ -312,68 +197,32 @@ const StilbauWebsite = () => {
       </section>
 
       {/* Products Section */}
-      <section style={{ padding: '5rem 2rem', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <h2 style={{ 
-            fontSize: '3rem', 
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginBottom: '1rem'
-          }}>
-            Unser <span style={{
-              background: 'linear-gradient(135deg, #ffffff, #4a6fa5)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>Produktsortiment</span>
-          </h2>
-          <p style={{ 
-            textAlign: 'center', 
-            color: '#999',
-            marginBottom: '3rem',
-            maxWidth: '600px',
-            margin: '0 auto 3rem'
-          }}>
-            Hochwertige Bauelemente von Drutex - individuell konfigurierbar und in Premium-Qualität gefertigt
-          </p>
+      <section id="produkte" className="py-20 px-6 relative">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              Unser{' '}
+              <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                Produktsortiment
+              </span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Hochwertige Bauelemente von Drutex - individuell konfigurierbar und in Premium-Qualität gefertigt
+            </p>
+          </div>
 
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: `repeat(auto-fit, minmax(280px, 1fr))`,
-            gap: '2rem'
-          }}>
-            {Object.entries(products).map(([key, product]) => (
-              <div 
-                key={key}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '20px',
-                  padding: '2rem',
-                  cursor: 'pointer',
-                  transition: 'transform 0.3s, box-shadow 0.3s',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-10px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(44, 64, 89, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group hover:-translate-y-2 hover:shadow-2xl"
               >
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{product.icon}</div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{product.name}</h3>
-                <p style={{ color: '#999', marginBottom: '1rem' }}>Premium Qualität</p>
-                <div style={{ 
-                  fontSize: '1.2rem', 
-                  fontWeight: 'bold',
-                  color: '#4a6fa5'
-                }}>
-                  {product.price}
-                </div>
+                <div className="text-5xl mb-4">{product.icon}</div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+                  {product.name}
+                </h3>
+                <p className="text-gray-400 mb-4">{product.desc}</p>
+                <div className="text-2xl font-bold text-blue-400">{product.price}</div>
               </div>
             ))}
           </div>
@@ -381,175 +230,96 @@ const StilbauWebsite = () => {
       </section>
 
       {/* 3D Konfigurator Section */}
-      <section style={{ padding: '5rem 2rem', background: 'rgba(44, 64, 89, 0.1)', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              background: 'rgba(44, 64, 89, 0.2)',
-              border: '1px solid rgba(44, 64, 89, 0.3)',
-              borderRadius: '30px',
-              fontSize: '0.85rem',
-              marginBottom: '1rem'
-            }}>
-              <Zap size={16} /> Innovativ
+      <section id="3d-konfigurator" className="py-20 px-6 bg-gradient-to-b from-transparent via-blue-900/10 to-transparent relative">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-900/30 border border-green-700/50 rounded-full text-sm mb-4">
+              ⚡ Innovativ
             </span>
-            <h2 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              Der intelligente <span style={{
-                background: 'linear-gradient(135deg, #ffffff, #4a6fa5)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>3D-Konfigurator</span>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+              Der intelligente{' '}
+              <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                3D-Konfigurator
+              </span>
             </h2>
-            <p style={{ fontSize: '1.2rem', color: '#999', maxWidth: '800px', margin: '0 auto' }}>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Gestalten Sie Ihre Fenster in Echtzeit, sehen Sie Live-Preise und erhalten Sie sofort ein verbindliches Angebot
             </p>
           </div>
 
-          <div style={{
-            background: 'rgba(0, 0, 0, 0.3)',
-            borderRadius: '20px',
-            padding: '2rem',
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth > 968 ? '1fr 2fr' : '1fr', gap: '2rem' }}>
+          <div className="bg-black/30 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
+            <div className="grid lg:grid-cols-3 gap-8">
               {/* Configuration Panel */}
-              <div style={{ space: 'y-4' }}>
-                <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Konfiguration</h3>
-                
-                <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '1rem', borderRadius: '10px', marginBottom: '1rem' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#999' }}>Produkttyp</label>
-                  <select style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '5px',
-                    padding: '0.5rem',
-                    color: 'white',
-                    marginTop: '0.5rem'
-                  }}>
-                    <option>Fenster</option>
-                    <option>Haustür</option>
-                    <option>Terrassentür</option>
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg mb-4">Konfiguration</h3>
+
+                {/* Material Selection */}
+                <div className="bg-white/5 p-4 rounded-xl">
+                  <label className="text-sm text-gray-400 mb-2 block">Material</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['PVC', 'Holz', 'Alu'].map((mat) => (
+                      <button
+                        key={mat}
+                        onClick={() => setSelectedMaterial(mat.toLowerCase())}
+                        className={`py-2 px-3 rounded-lg transition-all duration-300 ${
+                          selectedMaterial === mat.toLowerCase()
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white/10 hover:bg-white/20'
+                        }`}
+                      >
+                        {mat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Size Input */}
+                <div className="bg-white/5 p-4 rounded-xl">
+                  <label className="text-sm text-gray-400 mb-2 block">Maße (B x H in mm)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      value={windowWidth}
+                      onChange={(e) => setWindowWidth(Number(e.target.value))}
+                      className="bg-white/10 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <input
+                      type="number"
+                      value={windowHeight}
+                      onChange={(e) => setWindowHeight(Number(e.target.value))}
+                      className="bg-white/10 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Verglasung */}
+                <div className="bg-white/5 p-4 rounded-xl">
+                  <label className="text-sm text-gray-400 mb-2 block">Verglasung</label>
+                  <select className="w-full bg-white/10 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>3-fach (Ug 0.5)</option>
+                    <option>2-fach (Ug 1.0)</option>
                   </select>
-                </div>
-
-                <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '1rem', borderRadius: '10px', marginBottom: '1rem' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#999' }}>Material</label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginTop: '0.5rem' }}>
-                    <button style={{
-                      padding: '0.5rem',
-                      background: '#2c4059',
-                      border: 'none',
-                      borderRadius: '5px',
-                      color: 'white',
-                      cursor: 'pointer'
-                    }}>PVC</button>
-                    <button style={{
-                      padding: '0.5rem',
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      border: 'none',
-                      borderRadius: '5px',
-                      color: 'white',
-                      cursor: 'pointer'
-                    }}>Holz</button>
-                    <button style={{
-                      padding: '0.5rem',
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      border: 'none',
-                      borderRadius: '5px',
-                      color: 'white',
-                      cursor: 'pointer'
-                    }}>Alu</button>
-                  </div>
-                </div>
-
-                <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '1rem', borderRadius: '10px' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#999' }}>Maße (B x H in mm)</label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '0.5rem' }}>
-                    <input 
-                      type="number" 
-                      defaultValue="1200" 
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
-                        borderRadius: '5px',
-                        padding: '0.5rem',
-                        color: 'white'
-                      }}
-                    />
-                    <input 
-                      type="number" 
-                      defaultValue="1400" 
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
-                        borderRadius: '5px',
-                        padding: '0.5rem',
-                        color: 'white'
-                      }}
-                    />
-                  </div>
                 </div>
               </div>
 
               {/* 3D View */}
-              <div>
-                <div style={{
-                  background: 'linear-gradient(135deg, rgba(44, 64, 89, 0.2), rgba(0, 0, 0, 0.5))',
-                  borderRadius: '15px',
-                  aspectRatio: '16/9',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative'
-                }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🪟</div>
-                    <p style={{ color: '#999' }}>3D-Ansicht wird geladen...</p>
-                    <button style={{
-                      marginTop: '1rem',
-                      padding: '0.5rem 1rem',
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      border: 'none',
-                      borderRadius: '10px',
-                      color: 'white',
-                      cursor: 'pointer'
-                    }}>
-                      AR-Ansicht aktivieren 📱
-                    </button>
-                  </div>
+              <div className="lg:col-span-2">
+                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl aspect-video flex items-center justify-center relative overflow-hidden">
+                  <div className="text-8xl animate-spin-slow">🪟</div>
+                  <button className="absolute bottom-4 right-4 px-4 py-2 bg-white/10 backdrop-blur-xl rounded-lg hover:bg-white/20 transition-all">
+                    AR-Ansicht 📱
+                  </button>
                 </div>
 
                 {/* Price Display */}
-                <div style={{
-                  marginTop: '1.5rem',
-                  padding: '1.5rem',
-                  background: 'linear-gradient(135deg, rgba(0, 255, 0, 0.1), transparent)',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(0, 255, 0, 0.3)'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="mt-6 p-6 bg-gradient-to-r from-green-900/30 to-transparent rounded-2xl border border-green-500/30">
+                  <div className="flex justify-between items-center">
                     <div>
-                      <p style={{ fontSize: '0.85rem', color: '#999' }}>Ihr Preis inkl. MwSt.</p>
-                      <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{konfiguratorPrice},00 €</p>
+                      <p className="text-sm text-gray-400">Ihr Preis inkl. MwSt.</p>
+                      <p className="text-4xl font-bold">{konfiguratorPrice},00 €</p>
                     </div>
-                    <button style={{
-                      background: 'linear-gradient(135deg, #2c4059, #3a5073)',
-                      color: 'white',
-                      border: 'none',
-                      padding: '1rem 2rem',
-                      borderRadius: '50px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}>
-                      Angebot anfordern <ArrowRight size={20} />
+                    <button className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:shadow-xl transition-all">
+                      Angebot anfordern →
                     </button>
                   </div>
                 </div>
@@ -557,22 +327,17 @@ const StilbauWebsite = () => {
             </div>
 
             {/* Features */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '2rem',
-              marginTop: '3rem'
-            }}>
+            <div className="grid md:grid-cols-4 gap-6 mt-12">
               {[
-                { icon: <Zap size={24} />, title: 'Live-Preise', desc: 'Sofortige Berechnung' },
-                { icon: <Eye size={24} />, title: 'AR-Ansicht', desc: 'Bei Ihnen zuhause' },
-                { icon: <Settings size={24} />, title: 'Millimetergenau', desc: 'Exakte Anfertigung' },
-                { icon: <Shield size={24} />, title: 'Speichern', desc: 'Jederzeit abrufbar' }
+                { icon: '⚡', title: 'Live-Preise', desc: 'Sofortige Berechnung' },
+                { icon: '👁️', title: 'AR-Ansicht', desc: 'Bei Ihnen zuhause' },
+                { icon: '⚙️', title: 'Millimetergenau', desc: 'Exakte Anfertigung' },
+                { icon: '💾', title: 'Speichern', desc: 'Jederzeit abrufbar' }
               ].map((feature, i) => (
-                <div key={i} style={{ textAlign: 'center' }}>
-                  <div style={{ color: '#4a6fa5', marginBottom: '0.5rem' }}>{feature.icon}</div>
-                  <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>{feature.title}</h4>
-                  <p style={{ fontSize: '0.85rem', color: '#999' }}>{feature.desc}</p>
+                <div key={i} className="text-center">
+                  <div className="text-2xl mb-2">{feature.icon}</div>
+                  <h4 className="font-semibold">{feature.title}</h4>
+                  <p className="text-sm text-gray-400">{feature.desc}</p>
                 </div>
               ))}
             </div>
@@ -581,61 +346,51 @@ const StilbauWebsite = () => {
       </section>
 
       {/* Trust Section */}
-      <section style={{ padding: '5rem 2rem', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth > 968 ? '1fr 1fr' : '1fr', gap: '4rem', alignItems: 'center' }}>
+      <section className="py-20 px-6 relative">
+        <div className="container mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '2rem' }}>
-                Warum <span style={{
-                  background: 'linear-gradient(135deg, #ffffff, #4a6fa5)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}>STILBAU</span> wählen?
+              <h2 className="text-4xl font-bold mb-8">
+                Warum{' '}
+                <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                  STILBAU
+                </span>{' '}
+                wählen?
               </h2>
-              
-              <div style={{ space: 'y-4' }}>
+
+              <div className="space-y-6">
                 {[
                   { title: 'Offizieller Drutex Premium Partner', desc: 'Direkter Zugang zu allen Drutex-Innovationen' },
                   { title: '3-4 Wochen Expressfertigung', desc: 'Schnellste Lieferzeiten durch optimierte Prozesse' },
                   { title: '100% Transparenz', desc: 'Live-Preise, keine versteckten Kosten' },
                   { title: 'Rundum-Service', desc: 'Von Beratung über Montage bis Wartung' }
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-                    <Check size={24} color="#4a6fa5" />
+                ].map((feature, i) => (
+                  <div key={i} className="flex gap-4">
+                    <span className="text-green-400 text-xl">✓</span>
                     <div>
-                      <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>{item.title}</h4>
-                      <p style={{ color: '#999' }}>{item.desc}</p>
+                      <h4 className="font-semibold mb-1">{feature.title}</h4>
+                      <p className="text-gray-400">{feature.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid grid-cols-2 gap-4">
               {[
                 { value: '98%', label: 'Kundenzufriedenheit' },
                 { value: '24h', label: 'Angebotserstellung' },
                 { value: '10J', label: 'Garantie' },
                 { value: 'A++', label: 'Energieeffizienz' }
               ].map((stat, i) => (
-                <div key={i} style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '15px',
-                  padding: '2rem',
-                  textAlign: 'center'
-                }}>
-                  <div style={{ 
-                    fontSize: '2.5rem', 
-                    fontWeight: 'bold',
-                    background: 'linear-gradient(135deg, #ffffff, #4a6fa5)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent'
-                  }}>
+                <div
+                  key={i}
+                  className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 text-center border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:scale-105"
+                >
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent mb-2">
                     {stat.value}
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: '#999' }}>{stat.label}</p>
+                  <p className="text-sm text-gray-400">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -644,80 +399,46 @@ const StilbauWebsite = () => {
       </section>
 
       {/* Payment Section */}
-      <section style={{ padding: '5rem 2rem', background: 'linear-gradient(to bottom, transparent, rgba(44, 64, 89, 0.1))', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>Flexible Zahlungsmöglichkeiten</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem', marginBottom: '2rem' }}>
+      <section className="py-20 px-6 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent">
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-8">Flexible Zahlungsmöglichkeiten</h2>
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
             {['💳 Kreditkarte', '📱 PayPal', '🍎 Apple Pay', '🏦 Überweisung'].map((payment) => (
-              <div key={payment} style={{
-                padding: '0.75rem 1.5rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: '10px'
-              }}>
+              <div
+                key={payment}
+                className="px-6 py-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 hover:border-blue-500/50 transition-all"
+              >
                 {payment}
               </div>
             ))}
-            <div style={{
-              padding: '0.75rem 1.5rem',
-              background: 'linear-gradient(135deg, rgba(128, 0, 128, 0.2), rgba(255, 0, 128, 0.2))',
-              border: '1px solid rgba(128, 0, 128, 0.3)',
-              borderRadius: '10px'
-            }}>
+            <div className="px-6 py-3 bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-xl rounded-xl border border-purple-500/50">
               ✨ Klarna Ratenzahlung
             </div>
           </div>
-          <p style={{ color: '#999' }}>
+          <p className="text-gray-400">
             Finanzierung möglich ab 500€ • 0% Zinsen bei 6 Monaten Laufzeit
           </p>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section style={{ padding: '5rem 2rem', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(44, 64, 89, 0.2), rgba(128, 0, 128, 0.1))',
-            borderRadius: '30px',
-            padding: '4rem',
-            textAlign: 'center',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <h2 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              Bereit für Ihre neuen <span style={{
-                background: 'linear-gradient(135deg, #ffffff, #4a6fa5)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>Traumfenster</span>?
+      <section className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-pink-900/30 backdrop-blur-xl rounded-3xl p-12 text-center border border-white/10">
+            <h2 className="text-4xl font-bold mb-4">
+              Bereit für Ihre neuen{' '}
+              <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                Traumfenster
+              </span>?
             </h2>
-            <p style={{ fontSize: '1.2rem', color: '#999', marginBottom: '2rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
+            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
               Starten Sie jetzt mit unserem 3D-Konfigurator oder lassen Sie sich kostenlos beraten
             </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button style={{
-                background: 'linear-gradient(135deg, #2c4059, #3a5073)',
-                color: 'white',
-                border: 'none',
-                padding: '1rem 2rem',
-                borderRadius: '50px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                3D-Konfigurator starten <ArrowRight size={20} />
+            <div className="flex flex-wrap gap-4 justify-center">
+              <button className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 rounded-full font-semibold flex items-center gap-2 hover:shadow-xl transition-all">
+                3D-Konfigurator starten →
               </button>
-              <button style={{
-                background: 'transparent',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                padding: '1rem 2rem',
-                borderRadius: '50px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                fontSize: '1rem'
-              }}>
+              <button className="border border-white/30 px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-all">
                 📞 Rückruf anfordern
               </button>
             </div>
@@ -726,78 +447,94 @@ const StilbauWebsite = () => {
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: '3rem 2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+      <footer className="py-12 px-6 border-t border-white/10">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Produkte</h4>
-              <ul style={{ listStyle: 'none', padding: 0, space: 'y-2' }}>
+              <h4 className="font-semibold mb-4">Produkte</h4>
+              <ul className="space-y-2 text-gray-400">
                 {['Fenster', 'Haustüren', 'Rollläden', 'Insektenschutz'].map((item) => (
-                  <li key={item} style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" style={{ color: '#999', textDecoration: 'none' }}>{item}</a>
+                  <li key={item}>
+                    <a href="#" className="hover:text-white transition-colors">{item}</a>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Service</h4>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
+              <h4 className="font-semibold mb-4">Service</h4>
+              <ul className="space-y-2 text-gray-400">
                 {['3D-Konfigurator', 'Aufmaß-Service', 'Montage', 'Wartung'].map((item) => (
-                  <li key={item} style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" style={{ color: '#999', textDecoration: 'none' }}>{item}</a>
+                  <li key={item}>
+                    <a href="#" className="hover:text-white transition-colors">{item}</a>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Unternehmen</h4>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
+              <h4 className="font-semibold mb-4">Unternehmen</h4>
+              <ul className="space-y-2 text-gray-400">
                 {['Über uns', 'Referenzen', 'Karriere', 'Partner'].map((item) => (
-                  <li key={item} style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" style={{ color: '#999', textDecoration: 'none' }}>{item}</a>
+                  <li key={item}>
+                    <a href="#" className="hover:text-white transition-colors">{item}</a>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Kontakt</h4>
-              <ul style={{ listStyle: 'none', padding: 0, color: '#999' }}>
-                <li style={{ marginBottom: '0.5rem' }}>📞 0800 - STILBAU</li>
-                <li style={{ marginBottom: '0.5rem' }}>✉️ info@stilbau.de</li>
-                <li style={{ marginBottom: '0.5rem' }}>📍 Göppingen</li>
-                <li style={{ marginTop: '1rem' }}>
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <a href="#" style={{ color: '#999' }}>FB</a>
-                    <a href="#" style={{ color: '#999' }}>IG</a>
-                    <a href="#" style={{ color: '#999' }}>YT</a>
-                  </div>
+              <h4 className="font-semibold mb-4">Kontakt</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>📞 0800 - STILBAU</li>
+                <li>✉️ info@stilbau.de</li>
+                <li>📍 Göppingen, Baden-Württemberg</li>
+                <li className="pt-2 flex gap-3">
+                  <a href="#" className="hover:text-white transition-colors">FB</a>
+                  <a href="#" className="hover:text-white transition-colors">IG</a>
+                  <a href="#" className="hover:text-white transition-colors">YT</a>
                 </li>
               </ul>
             </div>
           </div>
-          
-          <div style={{ 
-            paddingTop: '2rem', 
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem'
-          }}>
-            <p style={{ fontSize: '0.85rem', color: '#666' }}>© 2024 STILBAU GmbH. Alle Rechte vorbehalten.</p>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <a href="#" style={{ color: '#999', textDecoration: 'none', fontSize: '0.85rem' }}>Impressum</a>
-              <a href="#" style={{ color: '#999', textDecoration: 'none', fontSize: '0.85rem' }}>Datenschutz</a>
-              <a href="#" style={{ color: '#999', textDecoration: 'none', fontSize: '0.85rem' }}>AGB</a>
+
+          <div className="pt-8 border-t border-white/10 flex flex-wrap justify-between items-center text-sm text-gray-400">
+            <p>© 2024 STILBAU GmbH. Alle Rechte vorbehalten.</p>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-white transition-colors">Impressum</a>
+              <a href="#" className="hover:text-white transition-colors">Datenschutz</a>
+              <a href="#" className="hover:text-white transition-colors">AGB</a>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        .animate-fadeIn {
+          animation: fadeIn 1s ease-out;
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+      `}</style>
     </div>
-  );
-};
-
-
-export default StilbauWebsite;
-
+  )
+}
